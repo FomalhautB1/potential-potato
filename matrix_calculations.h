@@ -4,10 +4,22 @@
 #include <math.h>
 #include <string.h>
 #include "parse_output.h"
+#include <math.h>
+
+typedef struct {
+    double x, y, z;
+} Vector;
+
+typedef struct {
+    double m[3][3];
+} Matrix3;
 
 
-void cross_product(const double a[3], const double b[3], double result[3]);
-void normalize(double v[3]);
-double dot_product(const double a[3], const double b[3]);
-void rotate_atoms_to_plane(Atom atoms[], int num_atoms, int idx1, int idx2, int idx4);
+Vector subtract_vectors(Vector v1, Vector v2);
+double dot_product(Vector v1, Vector v2);
+Vector cross_product(Vector v1, Vector v2);
+Vector normalize(Vector v);
+Matrix3 rotation_matrix_from_axis_angle(Vector axis, double theta);
+Vector apply_matrix(Matrix3 R, Vector v);
+void transform_coordinates(Atom atoms[], int atom_count, int atom1_index, int atom2_index, int atom3_index);
 #endif

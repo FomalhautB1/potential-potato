@@ -14,7 +14,7 @@ int main() {
         scanf("%d %d %d", &first_atom, &second_atom, &third_atom);
 
         printf("%d, %d, %d \n", first_atom, second_atom, third_atom);
-        rotate_atoms_to_plane(atoms, atom_count, first_atom, second_atom, third_atom);
+        transform_coordinates(atoms, atom_count, first_atom, second_atom, third_atom);
     } else {
         printf("Координаты атомов не найдены.\n");
     }

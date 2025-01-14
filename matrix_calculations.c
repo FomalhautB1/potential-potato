@@ -1,84 +1,138 @@
 #include "matrix_calculations.h"
-#include "parse_output.h"
+#include <math.h>
+#define M_PI 3.14159265358979323846
 
-void cross_product(const double a[3], const double b[3], double result[3]) {
-    result[0] = a[1] * b[2] - a[2] * b[1];
-    result[1] = a[2] * b[0] - a[0] * b[2];
-    result[2] = a[0] * b[1] - a[1] * b[0];
+// 向量减法
+Vector subtract_vectors(Vector v1, Vector v2) {
+    Vector res;
+    res.x = v1.x - v2.x;
+    res.y = v1.y - v2.y;
+    res.z = v1.z - v2.z;
+    return res;
 }
 
-// Нормализация вектора
-void normalize(double v[3]) {
-    double magnitude = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-    if (magnitude > 0) {
-        v[0] /= magnitude;
-        v[1] /= magnitude;
-        v[2] /= magnitude;
-    }
+// 点积
+double dot_product(Vector v1, Vector v2) {
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
-double dot_product(const double a[3], const double b[3]) {
-    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+// 叉积
+Vector cross_product(Vector v1, Vector v2) {
+    Vector res;
+    res.x = v1.y * v2.z - v1.z * v2.y;
+    res.y = v1.z * v2.x - v1.x * v2.z;
+    res.z = v1.x * v2.y - v1.y * v2.x;
+    return res;
 }
 
-void rotate_atoms_to_plane(Atom atoms[], int atom_count, int idx1, int idx2, int idx3) {
-    double p1[3] = {atoms[idx1].x, atoms[idx1].y, atoms[idx1].z};
-    double p2[3] = {atoms[idx2].x, atoms[idx2].y, atoms[idx2].z};
-    double p4[3] = {atoms[idx3].x, atoms[idx3].y, atoms[idx3].z};
+// 向量归一化
+Vector normalize(Vector v) {
+    double len = sqrt(dot_product(v, v));
+    if (len == 0) {
+        return (Vector){0, 0, 0};
+    }
+    return (Vector){v.x / len, v.y / len, v.z / len};
+}
 
-    // Векторы, лежащие в плоскости
-    double v1[3], v2[3];
-    for (int i = 0; i < 3; i++) {
-        v1[i] = p2[i] - p1[i];
-        v2[i] = p4[i] - p1[i];
+// 罗德里格斯旋转矩阵
+Matrix3 rotation_matrix_from_axis_angle(Vector axis, double theta) {
+    Matrix3 R;
+    double ct = cos(theta);
+    double st = sin(theta);
+    double vt = 1 - ct;
+    axis = normalize(axis);
+    double x = axis.x;
+    double y = axis.y;
+    double z = axis.z;
+    R.m[0][0] = x * x * vt + ct;
+    R.m[0][1] = x * y * vt - z * st;
+    R.m[0][2] = x * z * vt + y * st;
+    R.m[1][0] = y * x * vt + z * st;
+    R.m[1][1] = y * y * vt + ct;
+    R.m[1][2] = y * z * vt - x * st;
+    R.m[2][0] = z * x * vt - y * st;
+    R.m[2][1] = z * y * vt + x * st;
+    R.m[2][2] = z * z * vt + ct;
+    return R;
+}
+
+// 应用旋转矩阵到向量
+Vector apply_matrix(Matrix3 R, Vector v) {
+    Vector res;
+    res.x = R.m[0][0] * v.x + R.m[0][1] * v.y + R.m[0][2] * v.z;
+    res.y = R.m[1][0] * v.x + R.m[1][1] * v.y + R.m[1][2] * v.z;
+    res.z = R.m[2][0] * v.x + R.m[2][1] * v.y + R.m[2][2] * v.z;
+    return res;
+}
+
+// 主变换函数
+void transform_coordinates(Atom atoms[], int atom_count, int atom1_index, int atom2_index, int atom3_index) {
+    // 确保索引有效
+    if (atom1_index < 0 || atom1_index >= atom_count ||
+        atom2_index < 0 || atom2_index >= atom_count ||
+        atom3_index < 0 || atom3_index >= atom_count) {
+        fprintf(stderr, "Invalid atom indices.\n");
+        return;
     }
 
-    // Нормаль к плоскости
-    double normal[3];
-    cross_product(v1, v2, normal);
-    normalize(normal);
+    Vector A = {atoms[atom1_index].x, atoms[atom1_index].y, atoms[atom1_index].z};
+    Vector B = {atoms[atom2_index].x, atoms[atom2_index].y, atoms[atom2_index].z};
+    Vector C = {atoms[atom3_index].x, atoms[atom3_index].y, atoms[atom3_index].z};
 
-    // Новые оси
-    double x_axis[3];
-    for (int i = 0; i < 3; i++) {
-        x_axis[i] = v1[i];
-    }
-    normalize(x_axis);
+    Vector AB = subtract_vectors(B, A);
+    Vector AC = subtract_vectors(C, A);
 
-    double y_axis[3];
-    cross_product(normal, x_axis, y_axis);
-    normalize(y_axis);
+    Vector N = cross_product(AB, AC);
+    N = normalize(N);
 
-    // Матрица поворота
-    double rotation_matrix[3][3] = {
-        {x_axis[0], y_axis[0], normal[0]},
-        {x_axis[1], y_axis[1], normal[1]},
-        {x_axis[2], y_axis[2], normal[2]}
-    };
+    Vector target = {0, 0, 1}; // 目标法向量：Z轴
 
-    // Поворот всех атомов
-    for (int i = 0; i < atom_count; i++) {
-        double atom[3] = {atoms[i].x, atoms[i].y, atoms[i].z};
-        double rotated[3] = {0.0, 0.0, 0.0};
+    if (dot_product(N, target) == -1.0) {
+        // 如果N和target相反，旋转180度
+        Vector rotation_axis = {1, 0, 0}; // 例如，绕X轴旋转
+        double theta = M_PI;
+        Matrix3 R = rotation_matrix_from_axis_angle(rotation_axis, theta);
 
-        // Умножение матрицы поворота на координаты атома
-        for (int j = 0; j < 3; j++) {
-            rotated[0] += rotation_matrix[0][j] * atom[j];
-            rotated[1] += rotation_matrix[1][j] * atom[j];
-            rotated[2] += rotation_matrix[2][j] * atom[j];
+        // 将所有原子平移到A点到原点
+        for (int i = 0; i < atom_count; i++) {
+            atoms[i].x -= A.x;
+            atoms[i].y -= A.y;
+            atoms[i].z -= A.z;
         }
 
-        // Обновление координат атома после поворота
-        atoms[i].x = rotated[0];
-        atoms[i].y = rotated[1];
-        atoms[i].z = rotated[2];
-    }
+        // 应用旋转矩阵
+        for (int i = 0; i < atom_count; i++) {
+            Vector v = {atoms[i].x, atoms[i].y, atoms[i].z};
+            v = apply_matrix(R, v);
+            atoms[i].x = v.x;
+            atoms[i].y = v.y;
+            atoms[i].z = v.z;
+        }
+    } else {
+        Vector rotation_axis = cross_product(N, target);
+        rotation_axis = normalize(rotation_axis);
 
-    // Смещение плоскости на z = 0
-    double z_shift = atoms[idx1].z;
-    // Смещаем все атомы так, чтобы плоскость была на z = 0
-    for (int i = 0; i < atom_count; i++) {
-        atoms[i].z -= z_shift;
+        double theta = acos(dot_product(N, target));
+
+        Matrix3 R = rotation_matrix_from_axis_angle(rotation_axis, theta);
+
+        // 平移到A点到原点
+        for (int i = 0; i < atom_count; i++) {
+            atoms[i].x -= A.x;
+            atoms[i].y -= A.y;
+            atoms[i].z -= A.z;
+        }
+
+        // 应用旋转矩阵
+        for (int i = 0; i < atom_count; i++) {
+            Vector v = {atoms[i].x, atoms[i].y, atoms[i].z};
+            v = apply_matrix(R, v);
+            atoms[i].x = v.x;
+            atoms[i].y = v.y;
+            atoms[i].z = v.z;
+        }
     }
-    print_atoms(atoms, atom_count);
+    print_atoms(atoms,atom_count);
 }
+
+
