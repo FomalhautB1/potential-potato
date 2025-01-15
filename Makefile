@@ -11,7 +11,7 @@ CFLAGS = -Wall -Wextra -std=c99
 LDFLAGS = -lm
 
 # Список исходных файлов
-SRCS = main.c parse_output.c matrix_calculations.c write_input.c
+SRCS = main.c parse_output.c matrix_calculations.c write_input.c find_cycles.c insert_dummy.c
 
 # Объектные файлы (замена .c на .o)
 OBJS = $(SRCS:.c=.o)

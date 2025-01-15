@@ -48,6 +48,10 @@ int read_coordinates(char *filename, Atom atoms[], int max_atoms) {
 void print_atoms(Atom atoms[], int atom_count) {
     printf("Прочитано %d атомов:\n", atom_count);
     for (int i = 0; i < atom_count; i++) {
-        printf("%s\t%lf\t%lf\t%lf\n", atoms[i].element, atoms[i].x, atoms[i].y, atoms[i].z);
-    }
+            printf("  %-2s%12.6f%12.6f%12.6f\n",
+                atoms[i].element,
+                atoms[i].x,
+                atoms[i].y,
+                atoms[i].z);
+            }
 }

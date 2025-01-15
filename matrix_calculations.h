@@ -4,7 +4,6 @@
 #include <math.h>
 #include <string.h>
 #include "parse_output.h"
-#include <math.h>
 
 typedef struct {
     double x, y, z;

@@ -133,15 +133,12 @@ void transform_coordinates(Atom atoms[], int atom_count, int atom1_index, int at
 }
 Vector calculate_mass_center(Atom atoms[], int atom1_index, int atom2_index, int atom3_index) {
     Vector mass_center = {0, 0, 0};
-    mass_center.x += atoms[atom1_index].x + atoms[atom2_index].x + atoms[atom3_index].x;
-    mass_center.y += atoms[atom1_index].y + atoms[atom2_index].y + atoms[atom3_index].y;
-    mass_center.z += atoms[atom1_index].z + atoms[atom2_index].z + atoms[atom3_index].z;
-
-    mass_center.x /= 3;
-    mass_center.y /= 3;
-    mass_center.z /= 3;
+    mass_center.x = (atoms[atom1_index].x + atoms[atom2_index].x + atoms[atom3_index].x) / 3.0;
+    mass_center.y = (atoms[atom1_index].y + atoms[atom2_index].y + atoms[atom3_index].y) / 3.0;
+    mass_center.z = (atoms[atom1_index].z + atoms[atom2_index].z + atoms[atom3_index].z) / 3.0;
     return mass_center;
 }
+
 void move_basis(Atom atoms[], int atom_count, Vector mass_center) {
     for (int i = 0; i < atom_count; i++) {
         atoms[i].x -= mass_center.x;
