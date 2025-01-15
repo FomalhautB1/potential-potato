@@ -1,12 +1,14 @@
 #include "parse_output.h"
 #include "matrix_calculations.h"
+#include "write_input.h"
+
 int main() {
     int first_atom;
     int second_atom;
     int third_atom;
 
     Atom atoms[MAX_ATOMS];
-    const char *filename = "S-NHC.out";
+    char *filename = "S-NHC.out";
     int atom_count = read_coordinates(filename, atoms, MAX_ATOMS);
     if (atom_count > 0) {
         print_atoms(atoms, atom_count);
@@ -18,6 +20,7 @@ int main() {
     } else {
         printf("Координаты атомов не найдены.\n");
     }
-    
+    filename = "S-NHC.out";
+    replaceLines(filename, atoms, atom_count);
     return 0;
 }

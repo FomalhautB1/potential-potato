@@ -15,6 +15,6 @@ typedef struct {
     double z;        // Координата Z
 } Atom;
 
-int read_coordinates(const char *filename, Atom atoms[], int max_atoms);
+int read_coordinates(char *filename, Atom atoms[], int max_atoms);
 void print_atoms(Atom atoms[], int atom_count);
 #endif

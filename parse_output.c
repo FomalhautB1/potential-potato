@@ -2,7 +2,7 @@
 
 
 // Функция для чтения координат атомов
-int read_coordinates(const char *filename, Atom atoms[], int max_atoms) {
+int read_coordinates(char *filename, Atom atoms[], int max_atoms) {
     FILE *file = fopen(filename, "r");
     if (!file) {
         perror("Ошибка при открытии файла");

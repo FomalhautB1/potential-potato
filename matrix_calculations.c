@@ -2,7 +2,6 @@
 #include <math.h>
 #define M_PI 3.14159265358979323846
 
-// 向量减法
 Vector subtract_vectors(Vector v1, Vector v2) {
     Vector res;
     res.x = v1.x - v2.x;
@@ -11,12 +10,10 @@ Vector subtract_vectors(Vector v1, Vector v2) {
     return res;
 }
 
-// 点积
 double dot_product(Vector v1, Vector v2) {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
-// 叉积
 Vector cross_product(Vector v1, Vector v2) {
     Vector res;
     res.x = v1.y * v2.z - v1.z * v2.y;
@@ -25,7 +22,6 @@ Vector cross_product(Vector v1, Vector v2) {
     return res;
 }
 
-// 向量归一化
 Vector normalize(Vector v) {
     double len = sqrt(dot_product(v, v));
     if (len == 0) {
@@ -34,7 +30,6 @@ Vector normalize(Vector v) {
     return (Vector){v.x / len, v.y / len, v.z / len};
 }
 
-// 罗德里格斯旋转矩阵
 Matrix3 rotation_matrix_from_axis_angle(Vector axis, double theta) {
     Matrix3 R;
     double ct = cos(theta);
@@ -56,7 +51,6 @@ Matrix3 rotation_matrix_from_axis_angle(Vector axis, double theta) {
     return R;
 }
 
-// 应用旋转矩阵到向量
 Vector apply_matrix(Matrix3 R, Vector v) {
     Vector res;
     res.x = R.m[0][0] * v.x + R.m[0][1] * v.y + R.m[0][2] * v.z;
@@ -65,9 +59,8 @@ Vector apply_matrix(Matrix3 R, Vector v) {
     return res;
 }
 
-// 主变换函数
 void transform_coordinates(Atom atoms[], int atom_count, int atom1_index, int atom2_index, int atom3_index) {
-    // 确保索引有效
+
     if (atom1_index < 0 || atom1_index >= atom_count ||
         atom2_index < 0 || atom2_index >= atom_count ||
         atom3_index < 0 || atom3_index >= atom_count) {
@@ -85,22 +78,16 @@ void transform_coordinates(Atom atoms[], int atom_count, int atom1_index, int at
     Vector N = cross_product(AB, AC);
     N = normalize(N);
 
-    Vector target = {0, 0, 1}; // 目标法向量：Z轴
+    Vector target = {0, 0, 1}; 
 
     if (dot_product(N, target) == -1.0) {
-        // 如果N和target相反，旋转180度
-        Vector rotation_axis = {1, 0, 0}; // 例如，绕X轴旋转
+
+        Vector rotation_axis = {1, 0, 0}; 
         double theta = M_PI;
         Matrix3 R = rotation_matrix_from_axis_angle(rotation_axis, theta);
 
-        // 将所有原子平移到A点到原点
-        for (int i = 0; i < atom_count; i++) {
-            atoms[i].x -= A.x;
-            atoms[i].y -= A.y;
-            atoms[i].z -= A.z;
-        }
 
-        // 应用旋转矩阵
+
         for (int i = 0; i < atom_count; i++) {
             Vector v = {atoms[i].x, atoms[i].y, atoms[i].z};
             v = apply_matrix(R, v);
@@ -108,6 +95,13 @@ void transform_coordinates(Atom atoms[], int atom_count, int atom1_index, int at
             atoms[i].y = v.y;
             atoms[i].z = v.z;
         }
+        Vector Z = {atoms[atom1_index].x, atoms[atom1_index].y, atoms[atom1_index].z};
+        for (int i = 0; i < atom_count; i++) {
+            //atoms[i].x -= A.x;
+            //atoms[i].y -= A.y;
+            atoms[i].z -= Z.z;
+        }
+
     } else {
         Vector rotation_axis = cross_product(N, target);
         rotation_axis = normalize(rotation_axis);
@@ -116,14 +110,8 @@ void transform_coordinates(Atom atoms[], int atom_count, int atom1_index, int at
 
         Matrix3 R = rotation_matrix_from_axis_angle(rotation_axis, theta);
 
-        // 平移到A点到原点
-        for (int i = 0; i < atom_count; i++) {
-            atoms[i].x -= A.x;
-            atoms[i].y -= A.y;
-            atoms[i].z -= A.z;
-        }
 
-        // 应用旋转矩阵
+
         for (int i = 0; i < atom_count; i++) {
             Vector v = {atoms[i].x, atoms[i].y, atoms[i].z};
             v = apply_matrix(R, v);
@@ -131,8 +119,36 @@ void transform_coordinates(Atom atoms[], int atom_count, int atom1_index, int at
             atoms[i].y = v.y;
             atoms[i].z = v.z;
         }
+        Vector Z = {atoms[atom1_index].x, atoms[atom1_index].y, atoms[atom1_index].z};
+        for (int i = 0; i < atom_count; i++) {
+            //atoms[i].x -= A.x;
+            //atoms[i].y -= A.y;
+            atoms[i].z -= Z.z;
+        }
+    
     }
+    Vector mass_center = calculate_mass_center(atoms, atom1_index, atom2_index, atom3_index);
+    move_basis(atoms, atom_count, mass_center);
     print_atoms(atoms,atom_count);
+}
+Vector calculate_mass_center(Atom atoms[], int atom1_index, int atom2_index, int atom3_index) {
+    Vector mass_center = {0, 0, 0};
+    mass_center.x += atoms[atom1_index].x + atoms[atom2_index].x + atoms[atom3_index].x;
+    mass_center.y += atoms[atom1_index].y + atoms[atom2_index].y + atoms[atom3_index].y;
+    mass_center.z += atoms[atom1_index].z + atoms[atom2_index].z + atoms[atom3_index].z;
+
+    mass_center.x /= 3;
+    mass_center.y /= 3;
+    mass_center.z /= 3;
+    return mass_center;
+}
+void move_basis(Atom atoms[], int atom_count, Vector mass_center) {
+    for (int i = 0; i < atom_count; i++) {
+        atoms[i].x -= mass_center.x;
+        atoms[i].y -= mass_center.y;
+        atoms[i].z -= mass_center.z;
+    }
+    return;
 }
 
 
