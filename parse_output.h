@@ -1,6 +1,12 @@
 #ifndef PARSE_OUTPUT_H
 #define PARSE_OUTPUT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,4 +23,9 @@ typedef struct {
 
 int read_coordinates(char *filename, Atom atoms[], int max_atoms);
 void print_atoms(Atom atoms[], int atom_count);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

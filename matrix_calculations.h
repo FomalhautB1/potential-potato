@@ -1,6 +1,10 @@
 #ifndef MATRIX_CALCULATIONS_H
 #define MATRIX_CALCULATIONS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <math.h>
 #include <string.h>
 #include "parse_output.h"
@@ -22,4 +26,10 @@ Vector apply_matrix(Matrix3 R, Vector v);
 void transform_coordinates(Atom atoms[], int atom_count, int atom1_index, int atom2_index, int atom3_index);
 Vector calculate_mass_center(Atom atoms[], int atom1_index, int atom2_index, int atom3_index);
 void move_basis(Atom atoms[], int atom_count, Vector mass_center);
+
+#ifdef __cplusplus
+}
+#endif
+
+
 #endif

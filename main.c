@@ -1,7 +1,7 @@
 #include "parse_output.h"
 #include "matrix_calculations.h"
 #include "write_input.h"
-#include "find_cycles.h"
+//#include "find_cycles.h"
 #include "insert_dummy.h"
 
 int main(int argc, char *argv[]) {
@@ -19,30 +19,51 @@ int main(int argc, char *argv[]) {
     Atom atoms[MAX_ATOMS];
     int atom_count = read_coordinates(filename, atoms, MAX_ATOMS);
     if (atom_count > 0) {
-            // начало анализа цикла, работает нестабильно
-            int cycle_nodes[MAX_ATOMS];
-            int cycle_size;
+            // // начало анализа цикла, работает нестабильно
+            // int cycle_nodes[MAX_ATOMS];
+            // int cycle_size;
 
-            if (find_cycles(atoms, atom_count, cycle_nodes, &cycle_size)) {
-                printf("Cycles found in the molecule.\n");
-                printf("Atoms in the cycle: ");
-                for (int i = 0; i < cycle_size; i++) {
-                    printf("%d ", cycle_nodes[i]);
-                }
-                printf("\n");
-            } else {
-                printf("No cycles found in the molecule.\n");
-            }
-            //  конец анализа цикла, работает нестабильно
+            // int target_cycle_size = 6; 
+
+            // if (find_all_cycles(atoms, atom_count, cycle_nodes, &cycle_size)) {
+            //     printf("Cycles found in the molecule.\n");
+            //     printf("Atoms in the cycle: ");
+            //     for (int i = 0; i < cycle_size; i++) {
+            //         printf("%d ", cycle_nodes[i]);
+            //     }
+            //     printf("\n");
+            // } else {
+            //     printf("No cycles found in the molecule.\n");
+            // }
+            // //  конец анализа цикла, работает нестабильно
         printf("Введите номера трех атомов в кольце через пробел\n");
         scanf("%d %d %d", &first_atom, &second_atom, &third_atom);
 
         printf("%d, %d, %d \n", first_atom, second_atom, third_atom);
         transform_coordinates(atoms, atom_count, first_atom, second_atom, third_atom);
-        insert_dummy_center(atoms, &atom_count);
+        printf("Вставить атом аустышку в центр цикла? (y/n)\n");
+    
+        char answer;
+        scanf(" %c", &answer); // Заметьте пробел перед %c для пропуска пробелов и новой строки
+
+        if (answer == 'y' || answer == 'Y') { // Проверяем на оба регистра
+           insert_dummy_center(atoms, &atom_count);
+        } else {
+            printf("Операция отменена.\n");
+        }
+
     } else {
         printf("Координаты атомов не найдены.\n");
+    }        
+    printf("Заменить координаты в изначальном файле (y/n)\n");   
+    char answer;
+    scanf(" %c", &answer); // Заметьте пробел перед %c для пропуска пробелов и новой строки
+
+    if (answer == 'y' || answer == 'Y') { // Проверяем на оба регистра
+        replaceLines(filename, atoms, atom_count);
+    } else {
+        printf("Операция отменена.\n");
     }
-    replaceLines(filename, atoms, atom_count);
+    generate_xyz(filename, atoms, atom_count);
     return 0;
 }

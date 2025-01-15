@@ -17,7 +17,7 @@ void replaceLines(char *filename, Atom atoms[], int atom_count) {
     }
 
     char line[LINE_LENGTH];
-    int writing_coordinates = 0;
+    //int writing_coordinates = 0;
 
     while (fgets(line, sizeof(line), file)) {
         // Проверяем начало секции координат
@@ -58,4 +58,44 @@ void replaceLines(char *filename, Atom atoms[], int atom_count) {
     // Заменяем исходный файл новым
     remove(filename);
     rename("temp.out", filename);
+
+
+
+}
+
+
+void generate_xyz(char *filename, Atom atoms[], int atom_count) {
+    size_t filename_len = strlen(filename) + 5; // +5 для ".xyz" и завершающего '\0'
+    char *new_filename = (char*) malloc(filename_len);
+    if (new_filename == NULL) {
+        perror("Ошибка выделения памяти");
+        exit(EXIT_FAILURE);
+    }
+    strcpy(new_filename, filename);
+    // Ищем последний '.' (точку) в имени файла
+    char *dot = strrchr(new_filename, '.');
+    if (dot != NULL) {
+        // Заменяем всё после точки на новое расширение
+        strcpy(dot, ".xyz");
+    } else {
+        // Если точки нет, просто добавляем расширение
+        strcat(new_filename, ".xyz");
+    }
+
+    FILE *file = fopen(new_filename, "w"); 
+    if (file == NULL) {
+        perror("Ошибка при создании файла");
+        free(new_filename); // Освобождаем память перед выходом
+        exit(EXIT_FAILURE);
+    }
+
+    fprintf(file, "%d", atom_count);
+    fprintf(file, "\n");
+    for (int i = 0; i < atom_count; i++) {
+    fprintf(file, "%s\t%f\t%f\t%f\n", atoms[i].element, atoms[i].x, atoms[i].y, atoms[i].z);
+    }
+    fclose(file);
+
+    printf("Файл '%s' успешно создан.\n", new_filename);
+    free(new_filename);
 }

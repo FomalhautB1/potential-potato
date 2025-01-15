@@ -2,10 +2,10 @@
 TARGET = Program
 
 # Компилятор
-CC = gcc
+CC = g++
 
 # Флаги компиляции
-CFLAGS = -Wall -Wextra -std=c99
+CFLAGS = -Wall -Wextra -std=c++11
 
 # Флаги линковки
 LDFLAGS = -lm
