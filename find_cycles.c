@@ -28,12 +28,11 @@ void count_cycles(const std::string& filename) {
     input.close();
 
     // Получение всех циклов
-    mol.FindSSSR(); // Обновляем циклы
+    mol.FindSSSR();
     std::vector<OpenBabel::OBRing*> rings = mol.GetSSSR();
 
     // Подсчет циклов по размеру
     int cycles_4 = 0, cycles_5 = 0, cycles_6 = 0, cycles_7 = 0, cycles_8 = 0;
-
     for (auto ring : rings) {
         size_t ring_size = ring->Size();
         if (ring_size == 4) ++cycles_4;
@@ -41,9 +40,17 @@ void count_cycles(const std::string& filename) {
         else if (ring_size == 6) ++cycles_6;
         else if (ring_size == 7) ++cycles_7;
         else if (ring_size == 8) ++cycles_8;
+
+        // Вывод номеров атомов в цикле
+        std::cout << "Цикл из " << ring_size << " атомов: (";
+        for (auto atom_idx : ring->_path) {
+            auto* atom = mol.GetAtom(atom_idx);
+            std::cout << atom->GetType() << atom->GetIdx() << " ";
+        }
+        std::cout << ")" << std::endl;
     }
 
-    // Вывод результатов
+    // Вывод итоговых результатов
     std::cout << "Количество циклов в молекуле из файла " << filename << ":\n";
     std::cout << "4-членных: " << cycles_4 << "\n";
     std::cout << "5-членных: " << cycles_5 << "\n";

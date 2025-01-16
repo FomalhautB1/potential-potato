@@ -14,6 +14,9 @@ void replaceLines(char *filename, Atom atoms[], int atom_count);
 
 char* MALLOC_generate_xyz(char* filename, Atom atoms[], int atom_count);
 
+void generate_orca_input(const char *xyz_file_path, const char *output_file_path, Atom atoms[], int atom_count);
+
+
 #ifdef __cplusplus
 }
 #endif

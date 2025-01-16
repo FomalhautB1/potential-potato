@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <openbabel/ring.h>
+#include <openbabel/atom.h>
 
 #ifdef __cplusplus
 extern "C" {

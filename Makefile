@@ -5,7 +5,7 @@ TARGET = Program
 CC = g++
 
 # Флаги компиляции
-CFLAGS = -Wall -Wextra -std=c++11 -fpermissive -I/usr/include/openbabel3/openbabel
+CFLAGS = -Wall -Wextra -std=c++11 -fpermissive -I/usr/include/openbabel3 -Wno-deprecated-declarations -Wno-unused-parameter
 
 # Флаги линковки
 LDFLAGS = -lm -lopenbabel
