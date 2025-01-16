@@ -37,15 +37,16 @@ int main(int argc, char *argv[]) {
 
         printf("Введите номера трех атомов в кольце через пробел\n");
         scanf("%d %d %d", &first_atom, &second_atom, &third_atom);
-
         printf("%d, %d, %d \n", first_atom, second_atom, third_atom);
+        first_atom -= 1;
+        second_atom -= 1;
+        third_atom -= 1;
         transform_coordinates(atoms, atom_count, first_atom, second_atom, third_atom);
 
         char answer2;
 
         printf("Вставить атом-пустышку между указанными атомами? (y/n)\n");
-        scanf("%c", &answer2); 
-        
+        scanf(" %c", &answer2); 
         if (answer2 == 'y' || answer2 == 'Y') { // Проверяем на оба регистра
            insert_dummy_center(atoms, &atom_count);
         } else {
@@ -61,7 +62,7 @@ int main(int argc, char *argv[]) {
         printf("Заменить координаты в изначальном файле (y/n)\n");
 
 
-        scanf(" %c", &answer); // Заметьте пробел перед %c для пропуска пробелов и новой строки
+        scanf(" %c", &answer); 
 
         if (answer == 'y' || answer == 'Y') { // Проверяем на оба регистра
             replaceLines(filename, atoms, atom_count);
@@ -73,7 +74,7 @@ int main(int argc, char *argv[]) {
     MALLOC_generate_xyz(filename, atoms, atom_count);
 
     printf("Сохранить %s?(y/n)\n", xyzfilename.c_str());   
-    scanf(" %c", &answer); // Заметьте пробел перед %c для пропуска пробелов и новой строки
+    scanf(" %c", &answer); 
 
     if (answer == 'y' || answer == 'Y') { // Проверяем на оба регистра
         printf("**not implemented yet***.\n");
