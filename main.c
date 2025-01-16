@@ -1,8 +1,10 @@
 #include "parse_output.h"
 #include "matrix_calculations.h"
 #include "write_input.h"
-//#include "find_cycles.h"
+#include <string>
+#include "find_cycles.h"
 #include "insert_dummy.h"
+
 
 int main(int argc, char *argv[]) {
     int first_atom;
@@ -19,6 +21,11 @@ int main(int argc, char *argv[]) {
     Atom atoms[MAX_ATOMS];
     int atom_count = read_coordinates(filename, atoms, MAX_ATOMS);
     if (atom_count > 0) {
+        char* new_filename = MALLOC_generate_xyz(filename, atoms, atom_count);
+        std::string xyzfilename = new_filename;
+        free(new_filename);
+        count_cycles(xyzfilename);
+        
             // // начало анализа цикла, работает нестабильно
             // int cycle_nodes[MAX_ATOMS];
             // int cycle_size;
@@ -64,6 +71,6 @@ int main(int argc, char *argv[]) {
     } else {
         printf("Операция отменена.\n");
     }
-    generate_xyz(filename, atoms, atom_count);
+    MALLOC_generate_xyz(filename, atoms, atom_count);
     return 0;
 }

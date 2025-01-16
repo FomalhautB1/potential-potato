@@ -1,21 +1,17 @@
 #ifndef FIND_CYCLES_H
 #define FIND_CYCLES_H
 
+#include <openbabel/obconversion.h>
+#include <openbabel/mol.h>
+#include <iostream>
+#include <vector>
+#include <openbabel/ring.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-
-#include "parse_output.h"
-
-double calculate_distance(Atom a1, Atom a2);
-void build_adjacency_matrix(Atom *atoms, int num_atoms, int adjacency_matrix[MAX_ATOMS][MAX_ATOMS]);
-void find_cycles_dfs(int node, int start, int depth, int *visited, int *path, int adjacency_matrix[MAX_ATOMS][MAX_ATOMS], int num_atoms, int target_cycle_size, int (*cycles)[MAX_ATOMS], int *cycle_count);
-int find_all_cycles(Atom *atoms, int num_atoms, int target_cycle_size, int (*cycles)[MAX_ATOMS]);
+void count_cycles(const std::string& filename);
 
 #ifdef __cplusplus
 }

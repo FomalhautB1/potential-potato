@@ -64,7 +64,7 @@ void replaceLines(char *filename, Atom atoms[], int atom_count) {
 }
 
 
-void generate_xyz(char *filename, Atom atoms[], int atom_count) {
+char* MALLOC_generate_xyz(char *filename, Atom atoms[], int atom_count) {
     size_t filename_len = strlen(filename) + 5; // +5 для ".xyz" и завершающего '\0'
     char *new_filename = (char*) malloc(filename_len);
     if (new_filename == NULL) {
@@ -89,7 +89,7 @@ void generate_xyz(char *filename, Atom atoms[], int atom_count) {
         exit(EXIT_FAILURE);
     }
 
-    fprintf(file, "%d", atom_count);
+    fprintf(file, "%d\n", atom_count);
     fprintf(file, "\n");
     for (int i = 0; i < atom_count; i++) {
     fprintf(file, "%s\t%f\t%f\t%f\n", atoms[i].element, atoms[i].x, atoms[i].y, atoms[i].z);
@@ -97,5 +97,5 @@ void generate_xyz(char *filename, Atom atoms[], int atom_count) {
     fclose(file);
 
     printf("Файл '%s' успешно создан.\n", new_filename);
-    free(new_filename);
+    return new_filename;
 }

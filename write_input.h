@@ -12,7 +12,7 @@ extern "C" {
 
 void replaceLines(char *filename, Atom atoms[], int atom_count);
 
-void generate_xyz(char* filename, Atom atoms[], int atom_count);
+char* MALLOC_generate_xyz(char* filename, Atom atoms[], int atom_count);
 
 #ifdef __cplusplus
 }
