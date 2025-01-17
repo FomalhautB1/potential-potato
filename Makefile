@@ -17,7 +17,15 @@ SRCS = main.c parse_output.c matrix_calculations.c write_input.c find_cycles.c i
 OBJS = $(SRCS:.c=.o)
 
 # Правило по умолчанию: сборка проекта
-all: $(TARGET)
+all: check_dependencies $(TARGET)
+
+# Проверка зависимостей
+check_dependencies:
+	@echo "Проверка наличия зависимостей..."
+	@which g++ > /dev/null || (echo "Компилятор g++ не найден!" && exit 1)
+	@pkg-config --exists eigen3 || (echo "Библиотека Eigen3 не найдена! Установите её с помощью 'sudo apt-get install libeigen3-dev'." && exit 1)
+	@pkg-config --exists openbabel-3 || (echo "Библиотека OpenBabel 3 не найдена! Установите её с помощью 'sudo apt-get install libopenbabel-dev'." && exit 1)
+	@echo "Все зависимости установлены."
 
 # Сборка исполняемого файла
 $(TARGET): $(OBJS)

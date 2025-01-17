@@ -35,42 +35,60 @@ int main(int argc, char *argv[]) {
 
         count_cycles(xyzfilename); //анализируем молкулу на циклы
 
-    std::string input;
-    std::vector<int> atom_indices;
+        std::string input;
+        std::vector<int> atom_indices;
+        std::cout << "Введите номера атомов через пробел: ";
+        std::getline(std::cin, input);  //читаем всю строку
+        std::stringstream ss(input); //используем stringstream для разделения строки на числа
+        int index;
+        while (ss >> index) {
+            atom_indices.push_back(index - 1);  //читаем числа из строки и добавляем их в вектор, уменьшая каждый на 1
+        }
 
-    std::cout << "Введите номера атомов через пробел: ";
-    std::getline(std::cin, input);  //читаем всю строку
+        
+        std::cout << "Введенные индексы атомов: "; // Выводим введенные индексы
+        for (int i : atom_indices) {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
 
-    
-    std::stringstream ss(input); //используем stringstream для разделения строки на числа
-    int index;
+        transform_coordinates(atoms, atom_count, atom_indices); // поворачиваем молкулу таким образм, что ось z перпендикулярна плоскости цикла
 
-    
-    while (ss >> index) {
-        atom_indices.push_back(index - 1);  //читаем числа из строки и добавляем их в вектор, уменьшая каждый на 1
-    }
+        char answer2;
 
-    
-    std::cout << "Введенные индексы атомов: "; // Выводим введенные индексы
-    for (int i : atom_indices) {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
+        printf("\nВставить атом-пустышку между указанными атомами? (y/n)\n");
+        scanf(" %c", &answer2); 
+        if (answer2 == 'y' || answer2 == 'Y') { // Проверяем на оба регистра
+            insert_dummy_center(atoms, &atom_count);
+        } else {
+            printf("Операция отменена.\n");
+        }
+        while (true) {
+            printf("Добавить атом пустышку по координатам? (y/n)\n");
+            scanf(" %c", &answer2);
 
-    transform_coordinates(atoms, atom_count, atom_indices); // поворачиваем молкулу таким образм, что ось z перпендикулярна плоскости цикла
+            double x;
+            double y;
+            double z;
 
-    char answer2;
+            if (answer2 == 'y' || answer2 == 'Y') { // Проверяем на оба регистра
+                    // Запрос на ввод координат
+                std::cout << "Введите координаты через пробел x, y, z (начало координат в центре кольца): ";
+                // Чтение значений из консоли
+                std::cin >> x >> y >> z;
+                // Вывод введенных данных
+                std::cout << "Введенные координаты: " << std::endl;
+                std::cout << "x: " << x << ", y: " << y << ", z: " << z << std::endl;
+                insert_dummy(atoms, &atom_count, x, y, z);
+            } else {
+                printf("Операция отменена.\n");
+                break;
+            }
+        }
 
-    printf("\nВставить атом-пустышку между указанными атомами? (y/n)\n");
-    scanf(" %c", &answer2); 
-    if (answer2 == 'y' || answer2 == 'Y') { // Проверяем на оба регистра
-        insert_dummy_center(atoms, &atom_count);
+
     } else {
-        printf("Операция отменена.\n");
-    }
-
-    } else {
-        printf("Координаты атомов не найдены.\n");
+        printf("Координаты атомов не найдены.\n"); //если не получилось считать координаты атомов из .out файла
         return 1;
     }   
 
