@@ -1,1 +1,2 @@
 sudo apt install libopenbabel-dev openbabel
+sudo apt-get install libeigen3-dev

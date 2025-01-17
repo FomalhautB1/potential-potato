@@ -8,9 +8,9 @@
 
 int main(int argc, char *argv[]) {
 
-    int first_atom;
-    int second_atom;
-    int third_atom;
+    //int first_atom;
+    //int second_atom;
+    //int third_atom;
 
     if (argc != 2) {
         fprintf(stderr, "Использование: %s <имя_файла>\n", argv[0]);
@@ -35,25 +35,39 @@ int main(int argc, char *argv[]) {
 
         count_cycles(xyzfilename); //анализируем молкулу на циклы
 
-        printf("Введите номера трех атомов в кольце через пробел\n");
-        scanf("%d %d %d", &first_atom, &second_atom, &third_atom);
-        //printf("%d, %d, %d \n", first_atom, second_atom, third_atom);
+    std::string input;
+    std::vector<int> atom_indices;
 
-        first_atom -= 1;
-        second_atom -= 1;
-        third_atom -= 1;
+    std::cout << "Введите номера атомов через пробел: ";
+    std::getline(std::cin, input);  //читаем всю строку
 
-        transform_coordinates(atoms, atom_count, first_atom, second_atom, third_atom); // поворачиваем молкулу таким образм, что ось z перпендикулярна плоскости цикла
+    
+    std::stringstream ss(input); //используем stringstream для разделения строки на числа
+    int index;
 
-        char answer2;
+    
+    while (ss >> index) {
+        atom_indices.push_back(index - 1);  //читаем числа из строки и добавляем их в вектор, уменьшая каждый на 1
+    }
 
-        printf("\nВставить атом-пустышку между указанными атомами? (y/n)\n");
-        scanf(" %c", &answer2); 
-        if (answer2 == 'y' || answer2 == 'Y') { // Проверяем на оба регистра
-           insert_dummy_center(atoms, &atom_count);
-        } else {
-            printf("Операция отменена.\n");
-        }
+    
+    std::cout << "Введенные индексы атомов: "; // Выводим введенные индексы
+    for (int i : atom_indices) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+
+    transform_coordinates(atoms, atom_count, atom_indices); // поворачиваем молкулу таким образм, что ось z перпендикулярна плоскости цикла
+
+    char answer2;
+
+    printf("\nВставить атом-пустышку между указанными атомами? (y/n)\n");
+    scanf(" %c", &answer2); 
+    if (answer2 == 'y' || answer2 == 'Y') { // Проверяем на оба регистра
+        insert_dummy_center(atoms, &atom_count);
+    } else {
+        printf("Операция отменена.\n");
+    }
 
     } else {
         printf("Координаты атомов не найдены.\n");
