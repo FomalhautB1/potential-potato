@@ -144,7 +144,7 @@ void generate_orca_input(const char *xyz_file_path, const char *output_file_path
     // Запись заголовка input файла
     //fprintf(output_file, "%%Pal nprocs 4 end\n"); // Задание числа процессоров
     fprintf(output_file, "! TightSCF NMR TPSS def2-mTZVP RI\n\n");
-    fprintf(output_file, "* xyzfile 0 1 %s\n", xyz_file_path); // Указание геометрии через xyz-файл
+    fprintf(output_file, "* xyz 0 1\n"); // Указание геометрии через xyz-файл
 
     // Чтение координат атомов и запись их в output файл
     //fprintf(output_file, "*\n");
