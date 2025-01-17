@@ -1,5 +1,5 @@
 # Имя исполняемого файла
-TARGET = Program
+TARGET = prepper
 
 # Компилятор
 CC = g++
