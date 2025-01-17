@@ -142,22 +142,31 @@ void generate_orca_input(const char *xyz_file_path, const char *output_file_path
     }
 
     // Запись заголовка input файла
-    fprintf(output_file, "%%Pal nprocs 4 end\n"); // Задание числа процессоров
+    //fprintf(output_file, "%%Pal nprocs 4 end\n"); // Задание числа процессоров
     fprintf(output_file, "! TightSCF NMR TPSS def2-mTZVP RI\n\n");
     fprintf(output_file, "* xyzfile 0 1 %s\n", xyz_file_path); // Указание геометрии через xyz-файл
 
     // Чтение координат атомов и запись их в output файл
-    fprintf(output_file, "*\n");
+    //fprintf(output_file, "*\n");
     //for (int i = 0; i < atom_count; i++) {
     //    fprintf(output_file, "%s\t%f\t%f\t%f\n", atoms[i].element, atoms[i].x, atoms[i].y, atoms[i].z);
     //}
                 for (int i = 0; i < atom_count; i++) {
+                if (strcmp(atoms[i].element, "X") == 0) {
+                    fprintf(output_file, "  %-2s%12.6f%12.6f%12.6f\n",
+                    "H:",
+                    atoms[i].x,
+                    atoms[i].y,
+                    atoms[i].z);
+                } else {
                 fprintf(output_file, "  %-2s%12.6f%12.6f%12.6f\n",
                     atoms[i].element,
                     atoms[i].x,
                     atoms[i].y,
                     atoms[i].z);
-            }
+                }
+                }
+    fprintf(output_file, "*");
     fclose(xyz_file);
     fclose(output_file);
 

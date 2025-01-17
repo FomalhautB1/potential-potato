@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
 
     Atom atoms[MAX_ATOMS];
 
-    int atom_count = read_coordinates(filename, atoms, MAX_ATOMS);
+    int atom_count = read_coordinates(filename, atoms, MAX_ATOMS); //читаем координаты оптимизированной структуры из .out ORCA
 
         
     char answer;
@@ -29,23 +29,25 @@ int main(int argc, char *argv[]) {
 
     if (atom_count > 0) {
 
-        char* new_filename = MALLOC_generate_xyz(filename, atoms, atom_count);
+        char* new_filename = MALLOC_generate_xyz(filename, atoms, atom_count); //генерируем .xyz файл с координатами атомов
         xyzfilename = new_filename;
         free(new_filename);
 
-        count_cycles(xyzfilename);
+        count_cycles(xyzfilename); //анализируем молкулу на циклы
 
         printf("Введите номера трех атомов в кольце через пробел\n");
         scanf("%d %d %d", &first_atom, &second_atom, &third_atom);
-        printf("%d, %d, %d \n", first_atom, second_atom, third_atom);
+        //printf("%d, %d, %d \n", first_atom, second_atom, third_atom);
+
         first_atom -= 1;
         second_atom -= 1;
         third_atom -= 1;
-        transform_coordinates(atoms, atom_count, first_atom, second_atom, third_atom);
+
+        transform_coordinates(atoms, atom_count, first_atom, second_atom, third_atom); // поворачиваем молкулу таким образм, что ось z перпендикулярна плоскости цикла
 
         char answer2;
 
-        printf("Вставить атом-пустышку между указанными атомами? (y/n)\n");
+        printf("\nВставить атом-пустышку между указанными атомами? (y/n)\n");
         scanf(" %c", &answer2); 
         if (answer2 == 'y' || answer2 == 'Y') { // Проверяем на оба регистра
            insert_dummy_center(atoms, &atom_count);
@@ -55,9 +57,11 @@ int main(int argc, char *argv[]) {
 
     } else {
         printf("Координаты атомов не найдены.\n");
+        return 1;
     }   
 
-
+/// заменяет координаты в изначальном логе орки, не используется
+/*
     if (argc > 2 && strcmp(argv[2], "-r") == 0) {
         printf("Заменить координаты в изначальном файле (y/n)\n");
 
@@ -70,18 +74,18 @@ int main(int argc, char *argv[]) {
             printf("Операция отменена.\n");
         }
     }
+*/
+    MALLOC_generate_xyz(filename, atoms, atom_count); // генерируем новый .xyz файл, так как координаты молкул изменились
+    if (argc > 2 && strcmp(argv[2], "-xyz") == 0) {
+        printf("Сохранить %s?(y/n)\n", xyzfilename.c_str());   
+        scanf(" %c", &answer); 
 
-    MALLOC_generate_xyz(filename, atoms, atom_count);
-
-    printf("Сохранить %s?(y/n)\n", xyzfilename.c_str());   
-    scanf(" %c", &answer); 
-
-    if (answer == 'y' || answer == 'Y') { // Проверяем на оба регистра
-        printf("**not implemented yet***.\n");
-    } else {
-        printf("Операция отменена.\n");
+        if (answer == 'y' || answer == 'Y') { // Проверяем на оба регистра
+            printf("**not implemented yet***.\n");
+        } else {
+            printf("Операция отменена.\n");
+        }
     }
-
 
     std::string output_file_path = "orca.inp";
 

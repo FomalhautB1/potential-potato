@@ -45,7 +45,7 @@ void count_cycles(const std::string& filename) {
         std::cout << "Цикл из " << ring_size << " атомов: (";
         for (auto atom_idx : ring->_path) {
             auto* atom = mol.GetAtom(atom_idx);
-            std::cout << atom->GetType() << atom->GetIdx() << " ";
+            std::cout << "# " << atom->GetIdx() << " " << atom->GetType() << "   ";
         }
         std::cout << ")" << std::endl;
     }
